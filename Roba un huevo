@@ -1,0 +1,57 @@
+-- VORTEX | AGARRE + ABRIR INSTANTANEO - SOLO PARA TU JUEGO
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local InstantMode = false
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "VortexInstant"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 220, 0, 50)
+Main.Position = UDim2.new(0.5, -110, 0.9, -25)
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true -- Movible
+Main.Parent = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 8)
+
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(1, -10, 1, -10)
+Button.Position = UDim2.new(0, 5, 0, 5)
+Button.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+Button.Text = "MODO: NORMAL"
+Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+Button.TextSize = 14
+Button.Font = Enum.Font.GothamBold
+Button.Parent = Main
+Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 6)
+
+-- FUNCION: Cambia todos los prompts
+local function UpdateAllPrompts()
+	for _, prompt in ipairs(workspace:GetDescendants()) do
+		if prompt:IsA("ProximityPrompt") then
+			prompt.HoldDuration = InstantMode and 0 or 1 -- 0 = instante, 1 = normal. Cambia el 1 por el tiempo de tu juego
+		end
+	end
+end
+
+-- Para prompts nuevos
+workspace.DescendantAdded:Connect(function(obj)
+	if obj:IsA("ProximityPrompt") and InstantMode then
+		obj.HoldDuration = 0
+	end
+end)
+
+-- BOTON
+Button.MouseButton1Click:Connect(function()
+	InstantMode = not InstantMode
+	UpdateAllPrompts()
+	
+	Button.Text = InstantMode and "MODO: INSTANTE" or "MODO: NORMAL"
+	Button.BackgroundColor3 = InstantMode and Color3.fromRGB(50, 180, 90) or Color3.fromRGB(180, 50, 50)
+end)
